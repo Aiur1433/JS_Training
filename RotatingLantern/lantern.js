@@ -52,17 +52,21 @@ function createLantern() {
     geometry.setAttribute('normal', new Float32BufferAttribute(normals, 3));
     geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
 
+    geometry.addGroup(0,3,0);
+    geometry.addGroup(3,3,1);
+    geometry.addGroup(6,3,2);
+    geometry.addGroup(9,3,3);
+
     // 纹理
-    const mater = new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')})
     const materials = [
         new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
-        new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
-        new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
-        new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
+        new MeshBasicMaterial({color:'blue'}),
+        new MeshBasicMaterial({color:'red'}),
+        new MeshBasicMaterial({color:'yellow'}),
 
     ];
 
-    return new Mesh(geometry, mater);
+    return new Mesh(geometry, materials);
 }
 
 function loadColorTexture(path) {
