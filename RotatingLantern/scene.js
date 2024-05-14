@@ -5,13 +5,13 @@ import {createLights} from "./lights.js";
 let obj;
 let light;
 
-function createScene(backGroundColor) {
+function createScene(backGroundColor,radius, height, radialSegments ) {
     const scene = new Scene();
 
     // 背景色
     scene.background = new Color(backGroundColor);
     // 展示对象
-    obj = createLantern();
+    obj = createLantern(radius, height, radialSegments );
     // 灯光
     light = createLights();
 

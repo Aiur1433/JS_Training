@@ -9,10 +9,10 @@ function main() {
     const renderer = createRenderer(container);
 
     // 创建场景
-    const scene = createScene();
+    const scene = createScene('#66CCFF',3,8,4);
 
     // 设置镜头
-    const camera = createCamera(35, 1, 0.1, 100);
+    const camera = createCamera(30, 1, 0.1, 100);
 
     // 设置动画
     const animation = new Animation(camera, scene, renderer);
