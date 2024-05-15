@@ -37,7 +37,6 @@ class Lantern extends Mesh {
         for (let i = 0; i < this.radialSegments; i++) {
             material.push(new MeshBasicMaterial({map: loadColorTexture(this.textures[i % this.textures.length])}));
         }
-
         return material;
     }
 
