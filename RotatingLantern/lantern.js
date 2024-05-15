@@ -12,27 +12,38 @@ const loader = new TextureLoader();
 class Lantern extends Mesh {
 
 
-    height = 3;
+    height = 5;
+    radius = 3;
+    radialSegments = 4;
     model;
+    textures;
 
     constructor() {
         const mesh = super()
-        mesh.material = [
-            new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
-            new MeshBasicMaterial({color: 'blue'}),
-            new MeshBasicMaterial({map: loadColorTexture('images/blackcat.jpg')}),
-            new MeshBasicMaterial({color: 'yellow'}),
-        ];
+
+        this.textures = ['images/naonaoiswatching.jpg', 'images/blackcat.jpg'];
+
         mesh.geometry = this.createModel(this.height);
+        mesh.material = this.createMaterials();
     }
 
     createModel() {
-        this.model = new Model(this.height);
+        this.model = new Model(this.radius, this.height, this.radialSegments);
         return this.model;
+    }
+
+    createMaterials() {
+        let material = [];
+        for (let i = 0; i < this.radialSegments; i++) {
+            material.push(new MeshBasicMaterial({map: loadColorTexture(this.textures[i % this.textures.length])}));
+        }
+
+        return material;
     }
 
     refresh = () => {
         this.geometry = this.createModel();
+        this.material = this.createMaterials();
     }
 }
 

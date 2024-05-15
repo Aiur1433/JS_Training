@@ -27,7 +27,9 @@ function main() {
     const animation = new Animation(camera, scene, renderer);
     animation.updatables.push(getMesh());
     gui.add( animation, 'degree', 0, 1000, 10 ).name('转速');
-    gui.add( getMesh(), 'height', 0, 10, 0.1 ).name('高度').onChange(getMesh().refresh);
+    gui.add( getMesh(), 'height', 1, 10, 0.1 ).name('高度').onChange(getMesh().refresh);
+    gui.add( getMesh(), 'radius', 1, 10, 0.1 ).name('宽度').onChange(getMesh().refresh);
+    gui.add( getMesh(), 'radialSegments', 3, 64, 1 ).name('面数').onChange(getMesh().refresh);
 
 
     // 开始渲染
