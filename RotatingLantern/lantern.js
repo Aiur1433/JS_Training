@@ -1,72 +1,41 @@
 import {
-    BufferGeometry,
-    Float32BufferAttribute,
     Mesh,
     MeshBasicMaterial,
     TextureLoader,
-    SRGBColorSpace
+    SRGBColorSpace, WireframeGeometry
 } from 'three';
+import {Model} from './model.js'
 
 const loader = new TextureLoader();
 
-function createLantern() {
-    // 模型
-    const geometry = new BufferGeometry();
-    let vertices = [
-        // front
-        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [-3, -4, 3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [3, -4, 3], norm: [0, 0, 1], uv: [1, 0],},
 
-        // right
-        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [3, -4, 3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [3, -4, -3], norm: [0, 0, 1], uv: [1, 0],},
+class Lantern extends Mesh {
 
-        // back
-        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [3, -4, -3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [-3, -4, -3], norm: [0, 0, 1], uv: [1, 0],},
 
-        // left
-        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [-3, -4, -3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [-3, -4, 3], norm: [0, 0, 1], uv: [1, 0],}
-    ];
-    const positions = [];
-    const normals = [];
-    const uvs = [];
-    for (const vertex of vertices) {
-        positions.push(...vertex.pos);
-        normals.push(...vertex.norm);
-        uvs.push(...vertex.uv);
+    height = 3;
+    model;
+
+    constructor() {
+        const mesh = super()
+        mesh.material = [
+            new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
+            new MeshBasicMaterial({color: 'blue'}),
+            new MeshBasicMaterial({map: loadColorTexture('images/blackcat.jpg')}),
+            new MeshBasicMaterial({color: 'yellow'}),
+        ];
+        mesh.geometry = this.createModel(this.height);
     }
 
-    geometry.setIndex([
-        0, 1, 2,
-        3, 4, 5,
-        6, 7, 8,
-        9, 10, 11
-    ]);
-    geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
-    geometry.setAttribute('normal', new Float32BufferAttribute(normals, 3));
-    geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+    createModel() {
+        this.model = new Model(this.height);
+        return this.model;
+    }
 
-    geometry.addGroup(0, 3, 0);
-    geometry.addGroup(3, 3, 1);
-    geometry.addGroup(6, 3, 2);
-    geometry.addGroup(9, 3, 3);
-
-    // 纹理
-    const materials = [
-        new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
-        new MeshBasicMaterial({color: 'blue'}),
-        new MeshBasicMaterial({map: loadColorTexture('images/blackcat.jpg')}),
-        new MeshBasicMaterial({color: 'yellow'}),
-    ];
-
-    return new Mesh(geometry, materials);
+    refresh = () => {
+        this.geometry = this.createModel();
+    }
 }
+
 
 function loadColorTexture(path) {
     const texture = loader.load(path);
@@ -74,4 +43,4 @@ function loadColorTexture(path) {
     return texture;
 }
 
-export {createLantern};
+export {Lantern};

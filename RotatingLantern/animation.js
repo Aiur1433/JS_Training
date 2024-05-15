@@ -3,6 +3,8 @@ import {Clock, MathUtils} from 'three';
 const clock = new Clock();
 
 class Animation {
+    degree = 150;
+
     constructor(camera, scene, renderer) {
         this.camera = camera;
         this.scene = scene;
@@ -29,11 +31,11 @@ class Animation {
         const delta = clock.getDelta();
 
         for (const object of this.updatables) {
-            const radiansPerSecond = MathUtils.degToRad(30);
+            const radiansPerSecond = MathUtils.degToRad(this.degree);
             object.rotation.y += radiansPerSecond * delta;
 
         }
     }
 }
 
-export { Animation };
+export {Animation};

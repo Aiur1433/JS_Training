@@ -1,26 +1,31 @@
 import {Color, Scene} from 'three';
-import {createLantern} from "./lantern.js";
+import {Lantern} from "./lantern.js";
 import {createLights} from "./lights.js";
 
-let obj;
+let mesh;
+
 let light;
 
-function createScene(backGroundColor,radius, height, radialSegments ) {
+
+
+function createScene(backGroundColor) {
     const scene = new Scene();
 
     // 背景色
     scene.background = new Color(backGroundColor);
     // 展示对象
-    obj = createLantern(radius, height, radialSegments );
+    mesh = new Lantern();
+
     // 灯光
     light = createLights();
 
-    scene.add(obj, light);
+    scene.add(mesh, light);
+
     return scene;
 }
 
-function getObj(){
-    return obj;
+function getMesh() {
+    return mesh;
 }
 
-export {createScene,getObj};
+export {createScene, getMesh};
