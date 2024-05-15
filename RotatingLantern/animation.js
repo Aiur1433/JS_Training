@@ -28,10 +28,6 @@ class Animation {
         // only call the getDelta function once per frame!
         const delta = clock.getDelta();
 
-        // console.log(
-        //   `The last frame rendered in ${delta * 1000} milliseconds`,
-        // );
-
         for (const object of this.updatables) {
             const radiansPerSecond = MathUtils.degToRad(30);
             object.rotation.y += radiansPerSecond * delta;

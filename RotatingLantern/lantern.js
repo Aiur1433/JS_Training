@@ -14,24 +14,24 @@ function createLantern() {
     const geometry = new BufferGeometry();
     let vertices = [
         // front
-        {pos: [0, 3, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [-3, -3, 3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [3, -3, 3], norm: [0, 0, 1], uv: [1, 0],},
+        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
+        {pos: [-3, -4, 3], norm: [0, 0, 1], uv: [0, 0],},
+        {pos: [3, -4, 3], norm: [0, 0, 1], uv: [1, 0],},
 
         // right
-        {pos: [0, 3, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [3, -3, 3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [3, -3, -3], norm: [0, 0, 1], uv: [1, 0],},
+        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
+        {pos: [3, -4, 3], norm: [0, 0, 1], uv: [0, 0],},
+        {pos: [3, -4, -3], norm: [0, 0, 1], uv: [1, 0],},
 
         // back
-        {pos: [0, 3, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [3, -3, -3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [-3, -3, -3], norm: [0, 0, 1], uv: [1, 0],},
+        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
+        {pos: [3, -4, -3], norm: [0, 0, 1], uv: [0, 0],},
+        {pos: [-3, -4, -3], norm: [0, 0, 1], uv: [1, 0],},
 
         // left
-        {pos: [0, 3, 0], norm: [0, 0, 1], uv: [0.5, 1],},
-        {pos: [-3, -3, -3], norm: [0, 0, 1], uv: [0, 0],},
-        {pos: [-3, -3, 3], norm: [0, 0, 1], uv: [1, 0],}
+        {pos: [0, 4, 0], norm: [0, 0, 1], uv: [0.5, 1],},
+        {pos: [-3, -4, -3], norm: [0, 0, 1], uv: [0, 0],},
+        {pos: [-3, -4, 3], norm: [0, 0, 1], uv: [1, 0],}
     ];
     const positions = [];
     const normals = [];
@@ -52,18 +52,17 @@ function createLantern() {
     geometry.setAttribute('normal', new Float32BufferAttribute(normals, 3));
     geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
 
-    geometry.addGroup(0,3,0);
-    geometry.addGroup(3,3,1);
-    geometry.addGroup(6,3,2);
-    geometry.addGroup(9,3,3);
+    geometry.addGroup(0, 3, 0);
+    geometry.addGroup(3, 3, 1);
+    geometry.addGroup(6, 3, 2);
+    geometry.addGroup(9, 3, 3);
 
     // 纹理
     const materials = [
         new MeshBasicMaterial({map: loadColorTexture('images/naonaoiswatching.jpg')}),
-        new MeshBasicMaterial({color:'blue'}),
-        new MeshBasicMaterial({color:'red'}),
-        new MeshBasicMaterial({color:'yellow'}),
-
+        new MeshBasicMaterial({color: 'blue'}),
+        new MeshBasicMaterial({map: loadColorTexture('images/blackcat.jpg')}),
+        new MeshBasicMaterial({color: 'yellow'}),
     ];
 
     return new Mesh(geometry, materials);
