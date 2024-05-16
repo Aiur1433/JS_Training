@@ -14,7 +14,7 @@ class Resize {
         const obtControls = new OrbitControls(camera, renderer.domElement);
         obtControls.enableDampling = false; //使动画循环使用时阻尼或自转 意思是否有惯性
         obtControls.enableZoom = false; //是否允许缩放
-        obtControls.enablePan = true; //是否开启鼠标右键拖拽
+        obtControls.enablePan = false; //是否开启鼠标右键拖拽
         obtControls.autoRotate = false; //是否允许自动旋转
         obtControls.dampingFactor = 0.25; //动态阻尼系数：就是鼠标拖拽旋转灵敏度
         obtControls.minDistance = 200; //设置相机距离原点的最近距离；
