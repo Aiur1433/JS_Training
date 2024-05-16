@@ -15,10 +15,10 @@ function createUI(animation, renderer, gifCreator) {
     const setting = gui.addFolder('形状');
     setting.add(animation, 'degree', 90, 3600, 45).name('转速(°/s)');
     setting.add(getMesh(), 'height', 1, 10, 0.1).name('高度').onChange(getMesh().refresh);
-    setting.add(getMesh(), 'radius', 1, 10, 0.1).name('宽度').onChange(getMesh().refresh);
+    setting.add(getMesh(), 'radius', 1, 10, 0.1).name('半径').onChange(getMesh().refresh);
     setting.add(getMesh(), 'radialSegments', 3, 8, 1).name('面数').onChange(getMesh().refresh);
 
-    const folder = gui.addFolder('图片');
+    const folder = gui.addFolder('图片（点击小图删除）');
 
     const fileList = {};
     folder.addInput(getMesh(), 'file').name('选择图片').onChange((value) => {
