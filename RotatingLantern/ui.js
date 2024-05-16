@@ -10,10 +10,10 @@ GUI.prototype.addImg = function () {
 }
 
 
-function createUI(animation) {
+function createUI(animation, renderer, gifCreator) {
     gui = new GUI({title: '走马灯'});
     const setting = gui.addFolder('形状');
-    setting.add(animation, 'degree', 0, 1000, 10).name('转速');
+    setting.add(animation, 'degree', 100, 720, 10).name('转速');
     setting.add(getMesh(), 'height', 1, 10, 0.1).name('高度').onChange(getMesh().refresh);
     setting.add(getMesh(), 'radius', 1, 10, 0.1).name('宽度').onChange(getMesh().refresh);
     setting.add(getMesh(), 'radialSegments', 3, 64, 1).name('面数').onChange(getMesh().refresh);
@@ -31,7 +31,7 @@ function createUI(animation) {
     const control = gui.addFolder('操作');
     const folderParams = {
         function() {
-            console.log('hi')
+            gifCreator.createGif(renderer.domElement);
         }
     };
     control.add(folderParams, 'function').name('下载');

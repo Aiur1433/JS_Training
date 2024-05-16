@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "gif.js": "^0.2.0",
     "jquery": "^3.7.1",
     "three": "^0.164.1"
   },

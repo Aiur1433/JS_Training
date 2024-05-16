@@ -16,7 +16,6 @@ class Lantern extends Mesh {
     radius = 3;
     radialSegments = 4;
     model;
-    file;
     textures = [];
 
     constructor() {
