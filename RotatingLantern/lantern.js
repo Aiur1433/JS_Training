@@ -16,12 +16,11 @@ class Lantern extends Mesh {
     radius = 3;
     radialSegments = 4;
     model;
-    textures;
+    file;
+    textures = [];
 
     constructor() {
         const mesh = super()
-
-        this.textures = ['images/naonaoiswatching.jpg', 'images/blackcat.jpg'];
 
         mesh.geometry = this.createModel(this.height);
         mesh.material = this.createMaterials();
@@ -35,7 +34,12 @@ class Lantern extends Mesh {
     createMaterials() {
         let material = [];
         for (let i = 0; i < this.radialSegments; i++) {
-            material.push(new MeshBasicMaterial({map: loadColorTexture(this.textures[i % this.textures.length])}));
+            let rt = this.textures[i % this.textures.length];
+            if(rt){
+                material.push(new MeshBasicMaterial({map: loadColorTexture(rt)}));
+            }else {
+                material.push(new MeshBasicMaterial({color:'#000'}));
+            }
         }
         return material;
     }
@@ -43,6 +47,16 @@ class Lantern extends Mesh {
     refresh = () => {
         this.geometry = this.createModel();
         this.material = this.createMaterials();
+    }
+
+    addFile = (tempUrl) => {
+        this.textures.push(tempUrl);
+        this.refresh();
+    }
+
+    delFile = (tempUrl) => {
+        this.textures.splice(this.textures.indexOf(tempUrl),1);
+        this.refresh();
     }
 }
 
