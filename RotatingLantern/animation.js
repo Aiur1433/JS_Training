@@ -3,7 +3,7 @@ import {Clock, MathUtils} from 'three';
 const clock = new Clock();
 
 class Animation {
-    degree = 150;
+    degree = 90;
 
     constructor(camera, scene, renderer, gifCreator) {
         this.camera = camera;
@@ -15,14 +15,18 @@ class Animation {
 
     start() {
         this.renderer.setAnimationLoop(() => {
+            const delta = clock.getDelta();
+            const radiansPerSecond = MathUtils.degToRad(this.degree);
+            const range = radiansPerSecond * delta;
             // tell every animated object to tick forward one frame
-            this.tick();
+            this.tick(range);
 
             // render a frame
             this.renderer.render(this.scene, this.camera);
             if (this.gifCreator.isRecord) {
-                this.gifCreator.addFrame(this.renderer.domElement);
-                if(this.degree*this.gifCreator.frameCount===21600){
+                let max = this.degree >= 360 ? Math.PI * this.degree / 180 : 2 * Math.PI;
+                this.gifCreator.addFrame(this.renderer.domElement, range);
+                if (this.gifCreator.rangeCount >= max) {
                     this.gifCreator.render();
                 }
             }
@@ -33,13 +37,9 @@ class Animation {
         this.renderer.setAnimationLoop(null);
     }
 
-    tick() {
-        // only call the getDelta function once per frame!
-        const delta = clock.getDelta();
-
+    tick(range) {
         for (const object of this.updatables) {
-            const radiansPerSecond = MathUtils.degToRad(this.degree);
-            object.rotation.y += radiansPerSecond * delta;
+            object.rotation.y += range;
         }
     }
 }

@@ -13,7 +13,7 @@ GUI.prototype.addImg = function () {
 function createUI(animation, renderer, gifCreator) {
     gui = new GUI({title: '走马灯'});
     const setting = gui.addFolder('形状');
-    setting.add(animation, 'degree', 100, 720, 10).name('转速');
+    setting.add(animation, 'degree', 90, 3600, 45).name('转速(°/s)');
     setting.add(getMesh(), 'height', 1, 10, 0.1).name('高度').onChange(getMesh().refresh);
     setting.add(getMesh(), 'radius', 1, 10, 0.1).name('宽度').onChange(getMesh().refresh);
     setting.add(getMesh(), 'radialSegments', 3, 64, 1).name('面数').onChange(getMesh().refresh);
@@ -30,10 +30,12 @@ function createUI(animation, renderer, gifCreator) {
 
     const control = gui.addFolder('操作');
     const folderParams = {
+        filename:'unnamed',
         function() {
-            gifCreator.createGif(renderer.domElement);
+            gifCreator.createGif(renderer.domElement,folderParams.filename);
         }
     };
+    control.add(folderParams, 'filename').name('文件名');
     control.add(folderParams, 'function').name('下载');
     return gui;
 }
