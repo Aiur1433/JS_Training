@@ -9,18 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "core-js": "^3.34.0",
-    "roboto-fontface": "*",
-    "vite": "^5.1.5",
-    "vue": "^3.4.21",
-    "vuetify": "^3.5.8"
+    "ioredis": "^5.4.1",
+    "roboto-fontface": "*"
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",
     "@mdi/font": "6.2.95",
     "@types/node": "^20.11.25",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/eslint-config-typescript": "^13.0.0",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
@@ -31,14 +28,6 @@
     "pinia": "^2.1.7",
     "sass": "^1.71.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.2",
-    "unplugin-auto-import": "^0.17.5",
-    "unplugin-fonts": "^1.1.1",
-    "unplugin-vue-components": "^0.26.0",
-    "unplugin-vue-router": "^0.8.4",
-    "vite-plugin-vue-layouts": "^0.11.0",
-    "vite-plugin-vuetify": "^2.0.3",
-    "vue-router": "^4.3.0",
-    "vue-tsc": "^2.0.6"
+    "typescript": "^5.4.2"
   }
 }
