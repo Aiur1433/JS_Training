@@ -2,8 +2,6 @@ import fs, {PathOrFileDescriptor, WriteFileOptions} from "fs";
 import path from "path";
 import axios from "axios";
 
-import {Client} from "./redisManager";
-
 interface Agent {
     name: string;
     alignment: string[];
@@ -17,9 +15,6 @@ class ArkData {
     version: string;
     agents: Agent[];
 }
-
-const jsonList = ['character_table', 'char_patch_table', 'uniequip_table', 'handbook_team_table',
-    'handbook_info_table', 'skin_table']
 
 enum Profession {
     PIONEER, WARRIOR, TANK, SNIPER, CASTER, MEDIC, SUPPORT, SPECIAL
@@ -38,49 +33,43 @@ enum Job {
 
 const GAME_VERSION = "GAME_VERSION";
 const AGENT_LIST = "AGENT_LIST";
-export const getData = async () => {
+const PATH = './ArkData.json';
+const getData = async () => {
     //版本信息
     let res = await getGameDataByLangAndName('gamedata_const');
+    console.log("获取版本信息成功");
     let data = res.data;
     const version = data.dataVersion;
-    const redisClient = new Client();
-
-    let oldVersion = await redisClient.get(GAME_VERSION)
+    const arkDataJson = fs.readFileSync(PATH, 'utf8');
+    const arkData = JSON.parse(arkDataJson);
+    let oldVersion = arkData.version
+    console.log("当前版本：" + oldVersion);
+    console.log("最新版本：" + version);
     if (version !== oldVersion) {
         //更新数据
         //加载干员信息
-        let agents = await loadData(redisClient);
-        redisClient.set(GAME_VERSION, version);
-        const arkData: ArkData = {version: version, agents: agents}
-        return arkData
-    } else {
-        //直接读取
-        let list = await redisClient.smembers('AGENT_LIST');
-        const agents = [];
-        list.forEach((agent) => {
-            agents.push(JSON.parse(agent));
-        })
-        const arkData: ArkData = {version: version, agents: agents}
-
-        return arkData
+        let agents = await loadData();
+        const data: ArkData = {version: version, agents: agents}
+        //写入json
+        const file = path.resolve(PATH)
+        writeFileByUser(file, JSON.stringify(data), {encoding: 'utf8'})
     }
-
-
 }
 
-
-const loadData = async (redisClient) => {
+const loadData = async () => {
     //从Kengxxiao/ArknightsGameData仓库中获取对应服务器目录的excel文件夹下同名文件
 
     // 阵营信息
     const teams = loadTeam();
+
     // 皮肤信息，主要拿默认皮的画师
     const skins = loadSkin();
+
     // 档案信息，主要拿种族
     const handbooks = loadHandbook();
 
     return Promise.all([teams, skins, handbooks]).then(async (results) => {
-        let values = await Promise.all([loadCharacter(results[0], results[1], results[2], redisClient), loadCharacterExtend(results[0], results[1], results[2], redisClient)]);
+        let values = await Promise.all([loadCharacter(results[0], results[1], results[2]), loadCharacterExtend(results[0], results[1], results[2])]);
         let agents = values[0];
         agents.push(...values[1]);
         return agents;
@@ -89,18 +78,20 @@ const loadData = async (redisClient) => {
 
 const loadHandbook = async () => {
     let res = await getGameDataByLangAndName('handbook_info_table');
-    let data = res.data;
+    console.log("获取档案信息成功")
+    let data = res.data.handbookDict;
 
-    const handbooks = {};
+    let handbooks = {};
     for (const k of Object.keys(data)) {
         let storyText = data[k].storyTextAudio[0].stories[0].storyText;
-        const raceStr = '【种族】';
-        let raceIdx = storyText.indexOf(raceStr);
-        if (raceIdx >= 0) {
-            let race = storyText.substring(raceIdx + raceStr.length).trim();
-            race = race.substring(0, race.indexOf("\n")).trim();
-            handbooks[k].race = race;
+
+        const regex = /【种族】(.*)\n/;
+        const match = storyText.match(regex);
+        let race = '';
+        if (match) {
+            race = match[1];
         }
+        handbooks[k] = {race: race};
     }
 
     return handbooks;
@@ -108,6 +99,7 @@ const loadHandbook = async () => {
 
 const loadTeam = async () => {
     let res = await getGameDataByLangAndName('handbook_team_table');
+    console.log("获取阵营信息成功")
     let data = res.data;
     const teams = {};
     for (const k of Object.keys(data)) {
@@ -118,47 +110,60 @@ const loadTeam = async () => {
 
 const loadSkin = async () => {
     let res = await getGameDataByLangAndName('skin_table');
+    console.log("获取皮肤信息成功")
     let data = res.data;
     const skins = {};
     for (const k of Object.keys(data.buildinEvolveMap)) {
         let skinId = data.buildinEvolveMap[k][0];
+        if (data.charSkins[skinId].displaySkin.drawerList == null) {
+            //预备干员没有皮肤 跳过
+            continue;
+        }
         skins[k] = data.charSkins[skinId].displaySkin.drawerList[0];
     }
     for (const k of Object.keys(data.buildinPatchMap)) {
         let charList = data.buildinPatchMap[k];
         for (const id of Object.keys(charList)) {
             let skinId = charList[id];
+
             skins[k] = data.charSkins[skinId].displaySkin.drawerList[0];
         }
     }
     return skins;
 }
 
-const loadCharacterExtend = async (teams, skins, handbooks, redisClient) => {
+const loadCharacterExtend = async (teams, skins, handbooks) => {
     let res = await getGameDataByLangAndName('char_patch_table');
+    console.log("获取干员升变信息成功")
     let data = res.data;
+
+    const patchMap = {};
+    for (const id of Object.keys(data.infos)) {
+        for (const p of data.infos[id].tmplIds) {
+            patchMap[p] = id;
+        }
+    }
 
     const agents = [];
     for (const id of Object.keys(data.patchChars)) {
-        const agent = loadAgentsData(id, data[id], teams, skins, handbooks);
+        const agent = loadAgentsData(patchMap[id], data.patchChars[id], teams, skins, handbooks);
         if (agent !== null) {
-            redisClient.sadd(AGENT_LIST, JSON.stringify(agent));
             agents.push(agent);
         }
     }
     return agents;
 }
 
-const loadCharacter = async (teams, skins, handbooks, redisClient) => {
+const loadCharacter = async (teams, skins, handbooks) => {
     // 角色基本信息，里面包了召唤物和临时干员之类的，会自动跳过
     let res = await getGameDataByLangAndName('character_table');
+    console.log("获取干员信息成功")
     let data = res.data;
 
     const agents = [];
     for (const id of Object.keys(data)) {
         const agent = loadAgentsData(id, data[id], teams, skins, handbooks);
         if (agent !== null) {
-            redisClient.sadd(AGENT_LIST, JSON.stringify(agent));
             agents.push(agent);
         }
     }
@@ -183,10 +188,9 @@ const loadAgentsData = (id, data, teams, skins, handbooks) => {
         tempTeam.push(teams[data.nationId]);
     }
 
-
     let agent: Agent = {
         name: data.name.trim(),
-        alignment: [...new Set(tempTeam.join('-').replace('−', '-').split('-').filter(v => v))],
+        alignment: [...tempTeam.join('-').replace('−', '-').split('-').filter(v => v)],
         job: Number(Job[data.subProfessionId.trim()]),
         race: handbooks[id].race,
         rarity: rarity,
@@ -208,17 +212,10 @@ const getRarity = (rarity: any): number => {
     return result;
 }
 
-const writeJsonByLangAndName = async (jsonName) => {
-    const res = await getGameDataByLangAndName(jsonName);
-    const file = path.resolve(__dirname, `./data/zh_CN/${jsonName}.json`)
-    // 加载数据
-
-}
-
 export const getGameDataByLangAndName = (jsonName: string) => {
     return axios.get(`https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/${jsonName}.json`).catch((err) => {
         console.log(`${jsonName}文件 获取失败 重试`)
-        // console.log(JSON.stringify(err))
+        console.log(JSON.stringify(err))
         return getGameDataByLangAndName(jsonName)
     })
 }
@@ -249,3 +246,9 @@ function mkdir(filePath) {
 }
 
 
+const app = () => {
+    getData().then(() => console.log("数据加载完成"));
+}
+
+
+app();
